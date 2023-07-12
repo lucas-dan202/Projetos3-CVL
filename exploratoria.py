@@ -1,9 +1,9 @@
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 import numpy as np
 import streamlit as st
 
- # Ajuste da página geral
+# Ajuste da página geral
 st.set_page_config(
     page_title = 'Análise Exploratória',
     page_icon = ':books:',
@@ -47,8 +47,14 @@ def carregar_csv(): # Carregar e fazer alguns ajustes no dataset
         'male': 'Masculino (%)',
         'female': 'Feminino (%)'
         }
-    livros = livros.rename(columns=colunas) # Renomeação das colunas
-    livros['ISBN_13'] = livros['ISBN_13'].astype(object) # Como a coluna ISBN_13 é uma identificação, foi tranformado para string
+    # Renomeação das colunas
+    livros = livros.rename(columns=colunas)
+    # Como a coluna ISBN_13 é uma identificação, foi tranformado para string
+    livros['ISBN_13'] = livros['ISBN_13'].astype(object)
+    # Tratamento das avaliações maiores que 5, usando a média
+    menores_5 = livros.loc[livros['Avaliação'] <= 5, 'Avaliação']
+    media = round(menores_5.mean(), 1)
+    livros['Avaliação'] = livros['Avaliação'].apply(lambda x: media if x > 5 else x)
     return livros
 df = carregar_csv()
 
@@ -69,18 +75,19 @@ st.write(df['Idioma'].value_counts())
 st.write('---')
 
 st.header('Quantidade de avaliações feitas')
-plt.hist(df['Avaliação'])
-st.pyplot()
-st.set_option('deprecation.showPyplotGlobalUse', False) # Se não tiver essa linha, aparecerá um aviso que esse método será descontinuado
+barra = px.bar(df, x='Avaliação', y='Ano')
+st.plotly_chart(barra)
 st.write('---')
 
 st.header('Os 50 livros mais bem avaliados')
 st.write(df.nlargest(50, 'Avaliação'))
 st.write('---')
 
-st.header('Relação entre números de páginas e avaliações')
-plt.scatter(df['Páginas'], df['Avaliação'])
-st.pyplot()
+st.header('Relação entre números de páginas e avaliações (3D)')
+dispersao = px.scatter(df, x='Páginas', y='Avaliação')
+st.plotly_chart(dispersao)
+dispersao_3d = px.scatter_3d(df, x='Páginas', y='Avaliação', z='Ano')
+st.plotly_chart(dispersao_3d)
 st.write('---')
 
 st.header('Quantidade de livros lançados por ano')
