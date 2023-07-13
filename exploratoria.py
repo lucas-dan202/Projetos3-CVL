@@ -57,6 +57,7 @@ def carregar_csv(): # Carregar e fazer alguns ajustes no dataset
     livros['Avaliação'] = livros['Avaliação'].apply(lambda x: media if x > 5 else x)
     return livros
 df = carregar_csv()
+df = df.drop_duplicates()
 
 st.header('Dataframe geral dos Livros')
 st.dataframe(df, use_container_width=True) # Ou pode usar st.write(df)
