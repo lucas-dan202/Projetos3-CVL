@@ -142,6 +142,7 @@ linha.update_layout(title = 'Lançados desde 1990',
 st.plotly_chart(linha)
 st.write('---')
 
+st.header('Correlação entre variáveis numéricas')
 colunas_numericas = ['Quantidade de avaliações',
                      'Quantidade de resenhas', 'Quantidade de abandonos',
                      'Quantidade que estão relendo', 'Quantidade que querem ler',
@@ -151,9 +152,9 @@ calor = go.Heatmap(z=correlacao.values,
                      x=correlacao.columns,
                      y=correlacao.columns,
                      colorscale='Viridis')
-layout = go.Layout(title = 'Mapa de Calor - Correlação entre variáveis numéricas')
-mapa = go.Figure(data = [calor], layout = layout)
+mapa = go.Figure(data = [calor])
 st.plotly_chart(mapa)
+st.write('---')
 
 st.header('Todos os livros por idioma')
 selecionar_idioma = st.selectbox('Selecione um idioma:', df['Idioma'].unique())
