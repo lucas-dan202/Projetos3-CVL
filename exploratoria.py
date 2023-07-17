@@ -98,8 +98,8 @@ st.header('Distribuição dos gêneros')
 contagem_generos = df['Gênero'].str.split(' / ').explode().value_counts()
 total_livros = contagem_generos.sum()
 porcentagens = contagem_generos / total_livros * 100
-dados = pd.DataFrame({'Gênero': contagem_generos.index, 
-                      'Quantidade': contagem_generos.values, 
+dados = pd.DataFrame({'Gênero': contagem_generos.index,
+                      'Quantidade': contagem_generos.values,
                       'Porcentagem': porcentagens.values})
 pizza = px.pie(dados,
                 values = 'Quantidade',
