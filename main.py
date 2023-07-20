@@ -82,82 +82,110 @@ def carregar_csv():
 df = carregar_csv()
 df = df.drop_duplicates()
 
-st.header('Dataframe geral dos Livros')
-st.dataframe(df, use_container_width=True) # Ou pode usar st.write(df)
-st.write('---')
+def dataframe_geral():
+    st.header('Dataframe geral dos Livros')
+    st.dataframe(df, use_container_width = True) # Ou pode usar st.write(df)
 
-st.header('Quantidade de valores Null')
-st.write(df.isnull().sum())
-st.write('---')
+def valores_null():
+    st.header('Quantidade de valores Null')
+    st.write(df.isnull().sum())
 
-st.header('Contagem de aparições dos autores')
-st.write(df['Autor(a)'].value_counts())
-st.write('---')
+def contagem_autores():
+    st.header('Quantidade de autores')
+    st.write(df['Autor(a)'].value_counts())
 
-st.header('Distribuição dos gêneros')
-contagem_generos = df['Gênero'].str.split(' / ').explode().value_counts()
-total_livros = contagem_generos.sum()
-porcentagens = contagem_generos / total_livros * 100
-dados = pd.DataFrame({'Gênero': contagem_generos.index,
-                      'Quantidade': contagem_generos.values,
-                      'Porcentagem': porcentagens.values})
-pizza = px.pie(dados,
-                values = 'Quantidade',
-                names = 'Gênero',
-                labels = {'Quantidade': 'Quantidade de Livros'})
-st.plotly_chart(pizza)
-st.write('---')
+def distribuicao_generos():
+    st.header('Distribuição dos gêneros')
+    contagem_generos = df['Gênero'].str.split(' / ').explode().value_counts()
+    total_livros = contagem_generos.sum()
+    porcentagens = contagem_generos / total_livros * 100
+    dados = pd.DataFrame({'Gênero': contagem_generos.index,
+                        'Quantidade': contagem_generos.values,
+                        'Porcentagem': porcentagens.values})
+    pizza = px.pie(dados,
+                    values = 'Quantidade',
+                    names = 'Gênero',
+                    labels = {'Quantidade': 'Quantidade de Livros'})
+    st.plotly_chart(pizza)
 
-st.header('Contagem dos idiomas')
-st.write(df['Idioma'].value_counts())
-st.write('---')
+def contagem_idiomas():
+    st.header('Contagem dos idiomas')
+    st.write(df['Idioma'].value_counts())
 
-st.header('Quantidade de avaliações feitas')
-barra = px.bar(df, x = 'Avaliação', y = 'Ano')
-st.plotly_chart(barra)
-st.write('---')
+def avaliacoes_feitas():
+    st.header('Quantidade de avaliações feitas')
+    barra = px.bar(df, x = 'Avaliação', y = 'Ano')
+    st.plotly_chart(barra)
 
-st.header('Os 50 livros mais bem avaliados')
-st.write(df.nlargest(50, 'Avaliação'))
-st.write('---')
+def mais_avaliados():
+    st.header('Os 50 livros mais bem avaliados')
+    st.write(df.nlargest(50, 'Avaliação'))
 
-st.header('Relação entre números de páginas e avaliações (3D)')
-scatter1, scatter2 = st.columns(2)
-with scatter1:
+def paginas_e_avaliacoes():
+    st.header('Relação entre números de páginas e avaliações (3D)')
     dispersao = px.scatter(df, x = 'Páginas', y = 'Avaliação')
     st.plotly_chart(dispersao)
-with scatter2:
     dispersao_3d = px.scatter_3d(df, x = 'Páginas', y = 'Avaliação', z = 'Ano')
     st.plotly_chart(dispersao_3d)
-st.write('---')
 
-st.header('Quantidade de livros lançados por ano')
-st.write(df.groupby('Ano').size())
-livros_1990 = df[df['Ano'] >= 1990]
-contagem_livros = livros_1990['Ano'].value_counts().sort_index()
-linha = px.line(contagem_livros, x = contagem_livros.index, y = contagem_livros.values)
-linha.update_layout(title = 'Lançados desde 1990',
-                    xaxis_title = 'Ano',
-                    yaxis_title = 'Quantidade de livros')
-st.plotly_chart(linha)
-st.write('---')
+def livros_por_ano():
+    st.header('Quantidade de livros lançados por ano')
+    st.write(df.groupby('Ano').size())
+    livros_1990 = df[df['Ano'] >= 1990]
+    contagem_livros = livros_1990['Ano'].value_counts().sort_index()
+    linha = px.line(contagem_livros, x = contagem_livros.index, y = contagem_livros.values)
+    linha.update_layout(title = 'Lançados desde 1990',
+                        xaxis_title = 'Ano',
+                        yaxis_title = 'Quantidade de livros')
+    st.plotly_chart(linha)
 
-st.header('Correlação entre variáveis numéricas')
-colunas_numericas = ['Quantidade de avaliações',
-                     'Quantidade de resenhas', 'Quantidade de abandonos',
-                     'Quantidade que estão relendo', 'Quantidade que querem ler',
-                     'Quantidade que estão lendo', 'Quantidade que leram']
-correlacao = df[colunas_numericas].corr()
-calor = go.Heatmap(z=correlacao.values,
-                     x=correlacao.columns,
-                     y=correlacao.columns,
-                     colorscale='Viridis')
-mapa = go.Figure(data = [calor])
-st.plotly_chart(mapa)
-st.write('---')
+def variaveis_numericas():
+    st.header('Correlação entre variáveis numéricas')
+    colunas_numericas = ['Quantidade de avaliações',
+                        'Quantidade de resenhas', 'Quantidade de abandonos',
+                        'Quantidade que estão relendo', 'Quantidade que querem ler',
+                        'Quantidade que estão lendo', 'Quantidade que leram']
+    correlacao = df[colunas_numericas].corr()
+    calor = go.Heatmap(z=correlacao.values,
+                        x=correlacao.columns,
+                        y=correlacao.columns,
+                        colorscale='Viridis')
+    mapa = go.Figure(data = [calor])
+    st.plotly_chart(mapa)
 
-st.header('Todos os livros por idioma')
-selecionar_idioma = st.selectbox('Selecione um idioma:', df['Idioma'].unique())
-dados_filtrados = df[df['Idioma'] == selecionar_idioma]
-st.write(dados_filtrados)
-st.write('---')
+def livros_por_idioma():
+    st.header('Todos os livros por idioma')
+    selecionar_idioma = st.selectbox('Selecione um idioma:', df['Idioma'].unique())
+    dados_filtrados = df[df['Idioma'] == selecionar_idioma]
+    st.write(dados_filtrados)
+
+st.sidebar.title('Análises')
+analises = ['📚 Dataframe geral dos Livros', '❓ Quantidade de valores Null', '👨‍💼 Quantidade de autores',
+            '🎭 Gráfico pizza', '🗣️ Contagem dos idiomas', '⭐️ Gráfico barra',
+            '🏆 Os 50 livros mais bem avaliados', '📊 Gráfico de dispersão (3D)',
+            '📅 Quantidade de livros lançados por ano', '🔗 Mapa de calor',
+            '🗂️ Todos os livros por idioma']
+pagina_escolhida = st.sidebar.selectbox('Selecione uma análise:', analises)
+
+if pagina_escolhida == '📚 Dataframe geral dos Livros':
+    dataframe_geral()
+elif pagina_escolhida == '❓ Quantidade de valores Null':
+    valores_null()
+elif pagina_escolhida == '👨‍💼 Quantidade de autores':
+    contagem_autores()
+elif pagina_escolhida == '🎭 Gráfico pizza':
+    distribuicao_generos()
+elif pagina_escolhida == '🗣️ Contagem dos idiomas':
+    contagem_idiomas()
+elif pagina_escolhida == '⭐️ Gráfico barra':
+    avaliacoes_feitas()
+elif pagina_escolhida == '🏆 Os 50 livros mais bem avaliados':
+    mais_avaliados()
+elif pagina_escolhida == '📊 Gráfico de dispersão (3D)':
+    paginas_e_avaliacoes()
+elif pagina_escolhida == '📅 Quantidade de livros lançados por ano':
+    livros_por_ano()
+elif pagina_escolhida == '🔗 Mapa de calor':
+    variaveis_numericas()
+elif pagina_escolhida == '🗂️ Todos os livros por idioma':
+    livros_por_idioma()
